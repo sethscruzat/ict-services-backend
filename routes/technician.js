@@ -1,90 +1,89 @@
 const express = require('express');
-const Technician = require('./models/tech.js'); // Assuming your user model file is in './models/user'
+const Technician = require('./models/technicianModel');
 
 const router = express.Router();
 
-router.get('/users',async (req, res) => {
+router.get('/technician',async (req, res) => {
   try {
-    const users = await User.find();
-    //res.status(200).send(users)
-    res.json(users);
+    const technicians = await Technician.find();
+    res.status(200).json(technicians)
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching technicians:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-router.get('/user',async (req, res) => {
+router.get('/technician/:id',async (req, res) => {
   try {
-    const userquery = {username: req.query.username}
+    const query = {technicianID: req.params.id}
 
-    const user = await User.findOne(userquery);
-    if(!user){
+    const technician = await Technician.findOne(query);
+    if(!technician){
       res.status(404).send()
     }
-    //res.status(200).send(user)
     const responseData = {
-      username: user.username,
-      height: user.height,
-      weight: user.weight
+      technicianID: technician.technicianID,
+      firstName: technician.firstName,
+      lastName: technician.lastName,
+      ratings: technician.ratings,
     }
-    res.json(responseData);
-    console.log(responseData)
+    res.status(200).json(responseData);
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error fetching technician:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-router.post('/login',async (req, res) => {
+router.post('/technician/login',async (req, res) => {
   const query = {
-    email: req.body.email,
+    technicianID: req.body.technicianID,
     password: req.body.password
   }
 
   try {
-    const user = await User.findOne(query)
-    if (user != null){
-      const objToSend = {id: user.id, height: user.height, weight: user.weight};
+    const technician = await Technician.findOne(query)
+    if (technician != null){
+      const objToSend = {
+        technicianID: technician.technicianID,
+        firstName: technician.firstName,
+        lastName: technician.lastName,
+      };
       res.json(objToSend)
     }
 
-    if (!user) {
+    if (!technician) {
       return res.status(404).send();
     }
 
   } catch (error) {
-    console.error('Error fetching user:', error);
+    console.error('Error fetching technician:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
-router.post('/register',async (req, res) => {
-  const query = { username: req.body.username}
+router.post('/technician/register',async (req, res) => {
+  const query = { technicianID: req.body.technicianID}
   try{
-    checkUser = await User.findOne(query)
+    checkTech = await Technician.findOne(query)
 
-    if(checkUser == null){
-      const newUser = new User({
-        userID: req.body.userID,
-        name: req.body.name,
-        birthday: req.body.birthday,
-        username: req.body.username,
-        height: req.body.height,
-        weight: req.body.weight,
-        totalCalBurned: 0,
-        toDo: []
+    if(checkTech == null){
+      const newTechnician = new Technician({
+        technicianID: req.body.technicianID,
+        password: req.body.password,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        ratings: []
       })
-      newUser.save()
-      res.json(newUser)
+      newTechnician.save()
+      res.json(newTechnician)
     }else{
-      return res.status(400).json({username: "A user has already resgistered with this username"})
+      return res.status(400).json({technicianID: "A technician has already resgistered with this ID"})
     }
   }catch(error){
-    console.error("Error when creating user: ", error)
+    console.error("Error when creating technician: ", error)
     res.status(400).send()
   }
 })
 
 
-//module.exports = router;
+module.exports = router;

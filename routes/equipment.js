@@ -1,5 +1,5 @@
 const express = require('express');
-const Equipment = require('./models/equip');
+const Equipment = require('./models/equipmentModel');
 
 const router = express.Router();
 
@@ -16,7 +16,7 @@ router.get('/equipment/',async (req, res) => {
 
 router.get('/equipment/:id',async (req, res) => {
   try {
-    const equipquery = {equipmentID: req.query.equipmentID}
+    const equipquery = {equipmentID: req.params.id}
 
     const equipment = await Equipment.findOne(equipquery);
     if(!equipment){
@@ -49,9 +49,30 @@ router.post('/equipment/add',async (req, res) => {
       res.status(201).json(newEquipment);
       console.log(newEquipment)
     } catch (error) {
-      console.error('Error adding equipment:', error);
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+router.delete('/equipment/delete/:id', async (req, res) =>{
+  try{
+    const removedEquipment = {equipmentID: req.params.id};
+    const result = await Equipment.deleteOne(removedEquipment);
+    res.status(200).json(result);
+  }catch(error){
+    console.error('Error removing equipment:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+})
+
+router.put('/equipment/update/:id', async (req, res) => {
+  try {
+    const query = { equipmentID: req.params.id };
+    const updatedData = await Equipment.updateOne(query,{ $set: req.body });
+    res.status(200).json(updatedData);
+  } catch (error) {
+    console.error('Error updating equipment:', error);
+    res.json({ message: error.message });
+  }
+});
 
 module.exports = router;
