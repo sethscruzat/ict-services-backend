@@ -1,16 +1,30 @@
-const { ObjectId } = require('mongodb');
 const mongoose = require('mongoose');
 
-const userSchema = new mongoose.Schema({
-    userID: Number,
-    password: String,
-    role: String,
-    firstName: String,
-    lastName: String,
-});
+const userSchemas = {
+    admin: new mongoose.Schema({
+        adminID: Number,
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        tasks: Array,
+    }),
+    technician: new mongoose.Schema({
+        techID: Number,
+        email: String,
+        password: String,
+        firstName: String,
+        lastName: String,
+        tasks: Array,
+        remarks: Array
+    })
+};
 
-userSchema.set('collection', 'users')
+//userSchema.set('collection', 'users')
 
-const User = mongoose.model('Admin', userSchema);
+const User = {
+    admin: mongoose.model('Admin', userSchemas.admin, 'admin'),
+    technician: mongoose.model('Technician', userSchemas.technician, 'technician')
+}
 
 module.exports = User;

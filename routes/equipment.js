@@ -3,6 +3,7 @@ const Equipment = require('./models/equipmentModel');
 
 const router = express.Router();
 
+//Read
 router.get('/equipment/',async (req, res) => {
   try {
     const equipment = await Equipment.find();
@@ -14,6 +15,7 @@ router.get('/equipment/',async (req, res) => {
   }
 });
 
+//Read
 router.get('/equipment/:id',async (req, res) => {
   try {
     const equipquery = {equipmentID: req.params.id}
@@ -30,7 +32,7 @@ router.get('/equipment/:id',async (req, res) => {
   }
 });
 
-
+//Create
 router.post('/equipment/add',async (req, res) => {
     try {
       const {equipmentID, issuedTo, condition, location, noOfUnits, remarks, status, usageRate} = req.body
@@ -53,6 +55,7 @@ router.post('/equipment/add',async (req, res) => {
     }
   });
 
+  //Delete
 router.delete('/equipment/delete/:id', async (req, res) =>{
   try{
     const removedEquipment = {equipmentID: req.params.id};
@@ -64,6 +67,7 @@ router.delete('/equipment/delete/:id', async (req, res) =>{
   }
 })
 
+//Update
 router.put('/equipment/update/:id', async (req, res) => {
   try {
     const query = { equipmentID: req.params.id };
