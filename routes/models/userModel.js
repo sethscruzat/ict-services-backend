@@ -7,7 +7,7 @@ const userSchemas = {
         password: String,
         firstName: String,
         lastName: String,
-        tasks: Array,
+        role: String,
     }),
     technician: new mongoose.Schema({
         techID: Number,
@@ -15,8 +15,8 @@ const userSchemas = {
         password: String,
         firstName: String,
         lastName: String,
-        tasks: Array,
-        remarks: Array
+        remarks: Array,
+        role: String,
     })
 };
 

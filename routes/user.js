@@ -19,26 +19,14 @@ router.get('/user',async (req, res) => {
   }
 });
 
-// TODO : Make this be affected by filters (i.e. check role before displaying)
-router.get('/user/:email',async (req, res) => {
+router.get('/user/tech/:techID',async (req, res) => {
   try {
-    const query = {email: req.params.email}
-
-    let user =null;
-    for (let role of userRoles) {
-      user = await User[role].findOne(query);
-
-      if (user) {
-        break;
-      }
-    }
-    if(!user){
-      res.status(404).send()
-    }
+    const query = {techID: req.params.techID}
+    const user = await User["technician"].findOne(query);
     const responseData = {
       firstName: user.firstName,
       lastName: user.lastName,
-      tasks: user.tasks,
+      role: user.role,
     }
     res.status(200).json(responseData);
   } catch (error) {
@@ -70,8 +58,13 @@ router.post('/login',async (req, res) => {
         return res.status(401).json({ message: 'Invalid password' });
     }
     const token = jwt.sign({ email: user.email, firstName: user.firstName }, 'secret_key', { expiresIn: '1h' });
-
-    res.json({ token });
+    const responseData = {
+      techID: user.techID,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role
+    }
+    res.status(200).json(responseData);
 
   } catch (error) {
     console.error('Error fetching user:', error);

@@ -1,27 +1,27 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors')
-const bodyParser = require('body-parser');
 require('dotenv').config()
 
 const app = express();
 const PORT = process.env.PORT;
+const uri = process.env.MONGO_DB;
 
 const userRoutes = require('../routes/user.js');
-const equipmentRoutes = require('../routes/equipment.js');
-const uri = process.env.MONGO_DB;
+//const equipmentRoutes = require('../routes/equipment.js');
+const ticketRoutes = require('../routes/ticket.js');
 
 // Middleware
 app.use(express.json());
-app.use(bodyParser.json());
 app.use(express.urlencoded());
-app.use(cors())
+app.use(cors());
 
 mongoose.connect(uri, { dbName: "ict-services"})
   .then(() => {
     console.log('Connected to MongoDB');
     app.use('', userRoutes)
-    app.use('', equipmentRoutes)
+    app.use('', ticketRoutes)
+    //app.use('', equipmentRoutes)
     app.listen(PORT, () => {
       console.log(`Server started successfully at port ${PORT}`);
     });
