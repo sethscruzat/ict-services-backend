@@ -19,10 +19,39 @@ router.get('/user',async (req, res) => {
   }
 });
 
+//get technician list
+router.get('/user/tech',async (req, res) => {
+  try {
+    const techCollection = await User.technician.find({});
+    res.status(200).json(techCollection)
+  } catch (error) {
+    console.error('Error fetching users:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// geting Technician Data
 router.get('/user/tech/:techID',async (req, res) => {
   try {
     const query = {techID: req.params.techID}
     const user = await User["technician"].findOne(query);
+    const responseData = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+    }
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error('Error fetching user:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// geting Admin Data
+router.get('/user/admin/:adminID',async (req, res) => {
+  try {
+    const query = {adminID: req.params.adminID}
+    const user = await User["admin"].findOne(query);
     const responseData = {
       firstName: user.firstName,
       lastName: user.lastName,
@@ -60,6 +89,7 @@ router.post('/login',async (req, res) => {
     const token = jwt.sign({ email: user.email, firstName: user.firstName }, 'secret_key', { expiresIn: '1h' });
     const responseData = {
       techID: user.techID,
+      adminID: user.adminID,
       firstName: user.firstName,
       lastName: user.lastName,
       role: user.role

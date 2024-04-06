@@ -3,10 +3,17 @@ const Ticket = require('./models/ticketModel');
 
 const router = express.Router();
 
-//Admin assigning task to technician, :email is technician's email
+//Admin assigning task to technician
 router.put('/ticket/add', async (req, res) => {
     try {
-        const {ticketID, equipmentID, location, remarks, status, issuedBy, assignedTo} = req.body
+        const {equipmentID, location, remarks, issuedBy, assignedTo} = req.body;
+        let ticketID = 1;
+        const status = "In Progress"
+
+        const highestTicket = await Ticket.findOne().sort({ ticketID: -1 });
+        if (highestTicket) {
+            ticketID = highestTicket.ticketID + 1; // Increment highest ticketID by 1
+        }
         const newTicket = await Ticket.create({
             ticketID,
             equipmentID,
@@ -23,8 +30,7 @@ router.put('/ticket/add', async (req, res) => {
     }
 });
 
-// Route for both Admins and Technicians where the tasks that Technician completes get added to
-// the completedTasks array in both admin and technician
+// Route for marking as done by technician
 router.put('/ticket/complete/:ticketID', async (req, res) => {
     try {
         const query = { email: req.params.ticketID };
@@ -39,7 +45,7 @@ router.put('/ticket/complete/:ticketID', async (req, res) => {
 // gets all tasks
 router.get('/ticket/complete',async (req, res) => {
     try {
-        const allTickets = await Ticket.find({});
+        const allTickets = await Ticket.find({status: "Complete"});
         res.status(200).json(allTickets)
     } catch (error) {
         console.error('Error fetching users:', error);
@@ -47,6 +53,7 @@ router.get('/ticket/complete',async (req, res) => {
     }
 });
 
+// gets a specific task for technician. used to check the details of a ticket
 router.get('/ticket/find/:techID/:ticketID',async (req, res) => {
     try {
         const { techID, ticketID } = req.params;
@@ -65,9 +72,10 @@ router.get('/ticket/find/:techID/:ticketID',async (req, res) => {
     }
 });
 
+// lists all of technicians pending tickets
 router.get('/ticket/list/:techID',async (req, res) => {
     try {
-        const query = {'assignedTo.techID': req.params.techID}
+        const query = {'assignedTo.techID': req.params.techID, status: "In Progress"}
         const ticketList = await Ticket.find(query)
         res.status(200).json(ticketList);
     } catch (error) {
