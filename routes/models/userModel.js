@@ -15,7 +15,15 @@ const userSchemas = {
         password: String,
         firstName: String,
         lastName: String,
-        remarks: Array,
+        remarks: {
+            rating: Number, 
+            ticketID: Number, 
+            comment: String, 
+            ratedBy: {
+                adminID: Number, 
+                adminName: String
+            }
+        },
         role: String,
     })
 };

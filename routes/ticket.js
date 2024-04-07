@@ -31,10 +31,10 @@ router.put('/ticket/add', async (req, res) => {
 });
 
 // Route for marking as done by technician
-router.put('/ticket/complete/:ticketID', async (req, res) => {
+router.put('/ticket/mark/:ticketID', async (req, res) => {
     try {
-        const query = { email: req.params.ticketID };
-        const updatedData = await Ticket.updateOne(query,{ $set: { status: req.body } });
+        const query = { ticketID: req.params.ticketID };
+        const updatedData = await Ticket.updateOne(query,{ $set: { status: "Complete" } });
         res.status(200).json(updatedData);
     } catch (error) {
         console.error('Error updating equipment:', error);
@@ -53,14 +53,49 @@ router.get('/ticket/complete',async (req, res) => {
     }
 });
 
-// gets a specific task for technician. used to check the details of a ticket
-router.get('/ticket/find/:techID/:ticketID',async (req, res) => {
+
+// lists all of the completed tickets that admin has assigned
+router.get('/admin/list/:adminID',async (req, res) => {
     try {
-        const { techID, ticketID } = req.params;
-        const techTask = await Ticket.findOne({ticketID, 'assignedTo.techID': techID})
+        const query = {'issuedBy.adminID': req.params.adminID, status: "Complete"}
+        const ticketList = await Ticket.find(query)
+        res.status(200).json(ticketList);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// Route for getting a specific completed ticket
+router.get('/admin/find/:ticketID', async (req, res) => {
+    try {
+        const { ticketID } = req.params;
+        const result = await Ticket.findOne({ticketID});
         const responseData = {
+            ticketID: result.ticketID,
+            equipmentID: result.equipmentID,
+            location: result.location,
+            remarks: result.remarks,
+            assignedTo: result.assignedTo,
+            issuedBy: result.issuedBy,
+        }
+        res.status(200).json(responseData);
+    } catch (error) {
+        console.error('Error updating equipment:', error);
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// TECHNICIAN-RELATED TICKET ROUTES
+
+// gets a specific task for technician. used to check the details of a ticket
+router.get('/technician/find/:ticketID',async (req, res) => {
+    try {
+        const { ticketID } = req.params;
+        const techTask = await Ticket.findOne({ticketID})
+        const responseData = {
+            ticketID: techTask.ticketID,
             equipmentID: techTask.equipmentID,
-            equipmentName: techTask.equipmentName,
             location: techTask.location,
             remarks: techTask.remarks,
             issuedBy: techTask.issuedBy,
@@ -73,9 +108,21 @@ router.get('/ticket/find/:techID/:ticketID',async (req, res) => {
 });
 
 // lists all of technicians pending tickets
-router.get('/ticket/list/:techID',async (req, res) => {
+router.get('/technician/list/:techID',async (req, res) => {
     try {
         const query = {'assignedTo.techID': req.params.techID, status: "In Progress"}
+        const ticketList = await Ticket.find(query)
+        res.status(200).json(ticketList);
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+// lists all of technicians completed tickets
+router.get('/technician/complete/:techID',async (req, res) => {
+    try {
+        const query = {'assignedTo.techID': req.params.techID, status: "Complete"}
         const ticketList = await Ticket.find(query)
         res.status(200).json(ticketList);
     } catch (error) {

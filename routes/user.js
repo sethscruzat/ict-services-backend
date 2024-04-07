@@ -20,7 +20,7 @@ router.get('/user',async (req, res) => {
 });
 
 //get technician list
-router.get('/user/tech',async (req, res) => {
+router.get('/technician/all',async (req, res) => {
   try {
     const techCollection = await User.technician.find({});
     res.status(200).json(techCollection)
@@ -61,6 +61,18 @@ router.get('/user/admin/:adminID',async (req, res) => {
   } catch (error) {
     console.error('Error fetching user:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// lists all of the completed tickets that admin has assigned
+router.put('/admin/rate/:techID',async (req, res) => {
+  try {
+      const query = {techID: req.params.techID}
+      const ticketList = await User.technician.updateOne(query,{ $push: { remarks: req.body }},{ new: true })
+      res.status(200).json(ticketList);
+  } catch (error) {
+      console.error('Error fetching user:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
