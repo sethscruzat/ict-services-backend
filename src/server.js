@@ -27,4 +27,3 @@ mongoose.connect(uri, { dbName: "ict-services"})
     });
   })
   .catch(err => console.error('Error connecting to MongoDB:', err));
-

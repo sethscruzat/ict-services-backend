@@ -99,6 +99,7 @@ router.get('/technician/find/:ticketID',async (req, res) => {
             location: techTask.location,
             remarks: techTask.remarks,
             issuedBy: techTask.issuedBy,
+            assignedTo: techTask.assignedTo,
         }
         res.status(200).json(responseData);
     } catch (error) {

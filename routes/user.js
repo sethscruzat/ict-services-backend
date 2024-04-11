@@ -98,7 +98,7 @@ router.post('/login',async (req, res) => {
     if (!isValidPassword) {
         return res.status(401).json({ message: 'Invalid password' });
     }
-    const token = jwt.sign({ email: user.email, firstName: user.firstName }, 'secret_key', { expiresIn: '1h' });
+    const token = jwt.sign({ techID: user.techID, role: user.role }, process.env.JWT_KEY,{ expiresIn: '1h' });
     const responseData = {
       techID: user.techID,
       adminID: user.adminID,
@@ -107,6 +107,7 @@ router.post('/login',async (req, res) => {
       role: user.role
     }
     res.status(200).json(responseData);
+    //res.json(token)
 
   } catch (error) {
     console.error('Error fetching user:', error);
