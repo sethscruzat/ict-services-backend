@@ -15,7 +15,7 @@ router.get('/user',async (req, res) => {
     res.status(200).json(allUsers)
   } catch (error) {
     console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -25,8 +25,8 @@ router.get('/technician/all',async (req, res) => {
     const techCollection = await User.technician.find({});
     res.status(200).json(techCollection)
   } catch (error) {
-    console.error('Error fetching users:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error fetching technician list:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -42,8 +42,8 @@ router.get('/user/tech/:techID',async (req, res) => {
     }
     res.status(200).json(responseData);
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error fetching technician data:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
@@ -59,20 +59,20 @@ router.get('/user/admin/:adminID',async (req, res) => {
     }
     res.status(200).json(responseData);
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error fetching admin data:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 
-// lists all of the completed tickets that admin has assigned
+// Admin rating technician
 router.put('/admin/rate/:techID',async (req, res) => {
   try {
       const query = {techID: req.params.techID}
       const ticketList = await User.technician.updateOne(query,{ $push: { remarks: req.body }},{ new: true })
       res.status(200).json(ticketList);
   } catch (error) {
-      console.error('Error fetching user:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+      console.error('Error fetching technician:', error);
+      res.status(500).json({ error: error.message });
   }
 });
 
@@ -110,8 +110,8 @@ router.post('/login',async (req, res) => {
     //res.json(token)
 
   } catch (error) {
-    console.error('Error fetching user:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error, Incorrect user details input:', error);
+    res.status(500).json({ error: error.message });
   }
 });
 

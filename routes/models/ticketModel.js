@@ -8,6 +8,7 @@ const ticketSchema = new mongoose.Schema({
     status: String,
     issuedBy: {adminID: Number, adminName: String},
     assignedTo: {techID: Number, techName: String},
+    dateCreated: Date,
 })
 ticketSchema.set('collection', 'ticket')
 

@@ -9,6 +9,7 @@ router.put('/ticket/add', async (req, res) => {
         const {equipmentID, location, remarks, issuedBy, assignedTo} = req.body;
         let ticketID = 1;
         const status = "In Progress"
+        const dateCreated = new Date()
 
         const highestTicket = await Ticket.findOne().sort({ ticketID: -1 });
         if (highestTicket) {
@@ -22,11 +23,12 @@ router.put('/ticket/add', async (req, res) => {
             status,
             issuedBy,
             assignedTo,
+            dateCreated,
         });
         res.status(200).json(newTicket);
     } catch (error) {
-        console.error('Error updating equipment:', error);
-        res.status(500).json({ message: error.message });
+        console.error('Error assigning new ticket:', error);
+        res.status(400).json({ message: error.message });
     }
 });
 
@@ -37,7 +39,7 @@ router.put('/ticket/mark/:ticketID', async (req, res) => {
         const updatedData = await Ticket.updateOne(query,{ $set: { status: "Complete" } });
         res.status(200).json(updatedData);
     } catch (error) {
-        console.error('Error updating equipment:', error);
+        console.error('Error updating ticket details:', error);
         res.status(500).json({ message: error.message });
     }
 });
@@ -48,8 +50,8 @@ router.get('/ticket/complete',async (req, res) => {
         const allTickets = await Ticket.find({status: "Complete"});
         res.status(200).json(allTickets)
     } catch (error) {
-        console.error('Error fetching users:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error fetching list of tickets:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -61,8 +63,8 @@ router.get('/admin/list/:adminID',async (req, res) => {
         const ticketList = await Ticket.find(query)
         res.status(200).json(ticketList);
     } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error fetching list of tickets:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -81,7 +83,7 @@ router.get('/admin/find/:ticketID', async (req, res) => {
         }
         res.status(200).json(responseData);
     } catch (error) {
-        console.error('Error updating equipment:', error);
+        console.error('Error fetching ticket details:', error);
         res.status(500).json({ message: error.message });
     }
 });
@@ -103,8 +105,8 @@ router.get('/technician/find/:ticketID',async (req, res) => {
         }
         res.status(200).json(responseData);
     } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error fetching ticket details:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -115,8 +117,8 @@ router.get('/technician/list/:techID',async (req, res) => {
         const ticketList = await Ticket.find(query)
         res.status(200).json(ticketList);
     } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error fetching list of tickets:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
@@ -127,8 +129,8 @@ router.get('/technician/complete/:techID',async (req, res) => {
         const ticketList = await Ticket.find(query)
         res.status(200).json(ticketList);
     } catch (error) {
-        console.error('Error fetching user:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error fetching list of tickets:', error);
+        res.status(500).json({ error: error.message });
     }
 });
 
